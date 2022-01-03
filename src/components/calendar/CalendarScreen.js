@@ -11,6 +11,10 @@ import { CalendarModal } from './CalendarModal';
 import 'moment/locale/es';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import '!style-loader!css-loader!react-big-calendar/lib/css/react-big-calendar.css';
+import { useDispatch } from 'react-redux';
+import { uiOpenModal } from '../../actions/ui';
+import { eventSetActive } from '../../actions/calendar';
+import { AddNewFlat } from '../ui/AddNewFlat';
 
 moment.locale("es");
 const localizer = momentLocalizer(moment);
@@ -29,6 +33,7 @@ const events = [{
 
 
 export const CalendarScreen = () => {
+    const dispatch = useDispatch();
 
     const [lastView, setLastView] = useState( localStorage.getItem("lastview") || "month" );
 
@@ -45,11 +50,11 @@ export const CalendarScreen = () => {
     }
 
     const onDoubleClickEvent = (e) => {
-        console.log(e);
+        dispatch( uiOpenModal() );
     }
 
     const onSelectEvent = (e) => {
-        console.log(e);
+        dispatch( eventSetActive( e ) )
     }
 
     const onViewChange = (e) => {
@@ -77,6 +82,9 @@ export const CalendarScreen = () => {
                 }} />
 
                 <CalendarModal />
+
+
+                <AddNewFlat />
         </div>
     )
 }

@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import DateTimePicker from 'react-datetime-picker';
 import moment from 'moment';
+import Swal from 'sweetalert2';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { uiCloseModal } from '../../actions/ui';
 
 const customStyles = {
     content: {
@@ -22,22 +26,31 @@ const nowEnd = moment().minutes(0).seconds(0).add(2, 'hours');
 
 export const CalendarModal = () => {
 
+
+    // STATES
+
+    const dispatch = useDispatch();
+
     const [dateStart, setDateStart] = useState(now.toDate());
     const [dateEnd, setDateEnd] = useState(nowEnd.toDate());
 
+    const [titleValid, setTitleValid] = useState(true);
 
     const [formValues, setFormValues] = useState({
         title: "Event Name",
         notes:"",
         start: now.toDate(),
         end: nowEnd.toDate()
-    })
+    });
 
-    const { notes, title } = formValues;
+    const {title, notes, start, end} = formValues;
+
+    const { modalOpen } = useSelector(state => state.ui)
+
+    // FUNCIONTS
 
     const closeModal = () => {
-        console.log("Cerrando modal...");
-
+       dispatch( uiCloseModal() )
     }
 
     const onChangeStartDate = (e) => {
@@ -46,7 +59,6 @@ export const CalendarModal = () => {
             ...formValues, start: e
         });
     }
-
 
     const onChangeEndDate = (e) => {
         setDateEnd(e);
@@ -64,12 +76,30 @@ export const CalendarModal = () => {
 
     const handleSubmitForm = ( e) => {
         e.preventDefault();
-        console.log(formValues);
+
+        const momentStart = moment(start);
+        const momentEnd = moment(end);
+
+        if (momentStart.isSameOrAfter(momentEnd) ) {
+            Swal.fire("Error", "La fecha final debe ser mayor que la del inicio", 'error');
+            return;
+        }
+
+        if ( title.trim().length < 2 ) {
+            setTitleValid(false);
+            return;
+        }
+
+
+        //TODO: save in database
+
+        setTitleValid(true);
+        closeModal()
     }
 
     return (
         <Modal
-            isOpen={true}
+            isOpen={modalOpen}
             // onAfterOpen={afterOpenModal}
             onRequestClose={closeModal}
             style={customStyles}
@@ -108,7 +138,7 @@ export const CalendarModal = () => {
                     <input
                         type="text"
                         value={title}
-                        className="form-control"
+                        className={`form-control ${titleValid ? "" : "is-invalid"}`}
                         placeholder="Título del evento"
                         name="title"
                         onChange={handleInputChange}
