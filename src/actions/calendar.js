@@ -14,3 +14,22 @@ export const eventSetActive = (event) => {
         payload: event
     }
 }
+
+export const eventClearActiveEvent = () => {
+    return {
+        type: types.eventClearActiveEvent
+    }
+}
+
+export const eventUpdate = (event) => {
+    return {
+        type: types.eventUpdate,
+        payload: event
+    }
+}
+
+export const eventDeleted = ( ) => {
+    return {
+        type: types.eventDeleted
+    }
+}

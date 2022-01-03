@@ -1,5 +1,6 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
+import { eventClearActiveEvent } from '../../actions/calendar';
 import { uiOpenModal } from '../../actions/ui';
 
 export const AddNewFlat = () => {
@@ -8,6 +9,7 @@ export const AddNewFlat = () => {
     const dispatch = useDispatch();
 
     const handleAddNewEvent = () => {
+        dispatch( eventClearActiveEvent() );
         dispatch( uiOpenModal() );
     }
 

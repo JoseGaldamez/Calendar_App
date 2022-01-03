@@ -11,33 +11,22 @@ import { CalendarModal } from './CalendarModal';
 import 'moment/locale/es';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import '!style-loader!css-loader!react-big-calendar/lib/css/react-big-calendar.css';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { uiOpenModal } from '../../actions/ui';
-import { eventSetActive } from '../../actions/calendar';
+import { eventClearActiveEvent, eventSetActive } from '../../actions/calendar';
 import { AddNewFlat } from '../ui/AddNewFlat';
+import { DeleteEventFab } from '../ui/DeleteEventFab';
 
 moment.locale("es");
 const localizer = momentLocalizer(moment);
 
-
-const events = [{
-    title: "Cumpleaños del jefe",
-    start: moment().toDate(),
-    end: moment().add( 2, 'hours' ).toDate(),
-    bgcolor: '#fafafa',
-    user:{
-        _id:"123",
-        name:"Jose"
-    }
-}];
-
-
 export const CalendarScreen = () => {
     const dispatch = useDispatch();
+    const {events} = useSelector(state => state.calendar );
 
     const [lastView, setLastView] = useState( localStorage.getItem("lastview") || "month" );
 
-
+    
     const eventStyleGetter = (event, start, end, isSelected ) => {
         const style = {
             backgroundColor: "#367CF7",
@@ -62,6 +51,10 @@ export const CalendarScreen = () => {
         localStorage.setItem("lastview", e);
     }
 
+    const onSelectSlot = (e) => {
+        dispatch( eventClearActiveEvent() )
+    }
+
     return (
         <div className='calendar-screen'>
             <Navbar />
@@ -74,6 +67,8 @@ export const CalendarScreen = () => {
                 endAccessor="end"
                 eventPropGetter={eventStyleGetter}
                 messages={messages}
+                onSelectSlot={onSelectSlot}
+                selectable={true}
                 onView={onViewChange}
                 onSelectEvent={onSelectEvent}
                 onDoubleClickEvent={onDoubleClickEvent}
@@ -85,6 +80,7 @@ export const CalendarScreen = () => {
 
 
                 <AddNewFlat />
+                <DeleteEventFab />
         </div>
     )
 }
